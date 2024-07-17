@@ -1,0 +1,12 @@
+env: "local"
+db:
+  host: localhost
+  port: 5432
+  user: postgres
+  password: postgres
+  database: go-pass
+grpc:
+  port: 44044
+  timeout: 5s
+auth:
+  tokenTTL: 1h
