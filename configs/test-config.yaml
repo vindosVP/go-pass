@@ -3,4 +3,4 @@ port: 5432
 user: postgres
 password: postgres
 database: go-pass-test
-migrationsPath: ../../../migrations
+migrationsPath: C:/Golang/github.com/vindosVp/go-pass/migrations

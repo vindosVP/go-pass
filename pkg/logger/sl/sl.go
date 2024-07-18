@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"os"
 
+	"github.com/vindosVP/go-pass/pkg/logger/handlers/slogdiscard"
 	"github.com/vindosVP/go-pass/pkg/logger/handlers/slogpretty"
 )
 
@@ -17,6 +18,9 @@ const (
 
 	// envLocal is a production environment
 	envProd = "prod"
+
+	// envTest is a test environment
+	envTest = "test"
 )
 
 // Log consists configured logger instance
@@ -43,6 +47,10 @@ func SetupLogger(env string) {
 	case envProd:
 		log = slog.New(
 			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}),
+		)
+	case envTest:
+		log = slog.New(
+			slogdiscard.NewDiscardHandler(),
 		)
 	}
 	Log = log

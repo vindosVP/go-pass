@@ -31,7 +31,7 @@ type testConfig struct {
 }
 
 func parseTestConfig() (*testConfig, error) {
-	testCfgPath := "../../../configs/test-config.yaml"
+	testCfgPath := "C:/Golang/github.com/vindosVp/go-pass/configs/test-config.yaml"
 	viper.SetConfigFile(testCfgPath)
 	conf := &testConfig{}
 
