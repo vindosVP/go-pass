@@ -10,3 +10,4 @@ grpc:
   timeout: 5s
 auth:
   tokenTTL: 1h
+  secret: superSecret

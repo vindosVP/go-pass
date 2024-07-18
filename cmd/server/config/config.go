@@ -36,7 +36,7 @@ func (s *ServerConfig) String() string {
 // DBConfig consists of fields for database configuration
 type DBConfig struct {
 	Host     string `yaml:"host" validate:"required"`
-	Port     string `yaml:"port" validate:"required"`
+	Port     int    `yaml:"port" validate:"required"`
 	User     string `yaml:"user" validate:"required"`
 	Password string `yaml:"password" validate:"required"`
 	Database string `yaml:"database" validate:"required"`
@@ -50,6 +50,7 @@ type GRPCConfig struct {
 
 // AuthConfig consists of fields for authentication configuration
 type AuthConfig struct {
+	Secret   string        `yaml:"secret" validate:"required"`
 	TokenTTL time.Duration `yaml:"tokenTTL" validate:"required"`
 }
 

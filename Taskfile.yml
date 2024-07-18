@@ -1,0 +1,36 @@
+version: "3"
+
+tasks:
+  default:
+    cmds:
+      - task: generate
+  generate:
+    aliases:
+      - gen
+    desc: "Generate code from proto files"
+    cmds:
+      - protoc -I ./internal/proto ./internal/proto/auth.proto --go_out=./internal/proto/auth --go_opt=paths=source_relative --go-grpc_out=./internal/proto/auth --go-grpc_opt=paths=source_relative
+  test:
+    aliases:
+      - test
+    desc: "Runs tests"
+    cmds:
+      - go generate ./...
+      - go test ./... -v
+  coverage:
+    aliases:
+      - coverage
+    desc: "Runs tests and saves coverage results"
+    cmds:
+      - go generate ./...
+      - go test ./... -v -coverprofile /tests/coverage/cover.out
+      - go tool cover -html ./tests/coverage/cover.out -o ./tests/coverage/cover.html
+  build:
+    aliases:
+      - build
+    desc: "Builds the app"
+    cmds:
+      - BUILD_VERSION=v1.0.1
+      - BUILD_TIME=date
+      - BUILD_COMMIT=(git rev-parse HEAD)
+      - go build -ldflags "-X main.buildVersion=v1.0.1 -X main.buildDate=$(date +'%Y/%m/%d %H:%M:%S') -X main.buildCommit=$(git rev-parse HEAD)" -o server.exe ./cmd/server/main.go

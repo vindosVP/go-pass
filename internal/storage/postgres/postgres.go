@@ -1,3 +1,4 @@
+// Package postgres is a package for postgres storage
 package postgres
 
 import (
@@ -24,14 +25,17 @@ var retryDelays = map[uint]time.Duration{
 	2: 5 * time.Second,
 }
 
+// Storage consists the database
 type Storage struct {
 	db *pgxpool.Pool
 }
 
+// New creates the Storage instance
 func New(db *pgxpool.Pool) *Storage {
 	return &Storage{db: db}
 }
 
+// CreateUser creates user with provided email and password hash
 func (s *Storage) CreateUser(ctx context.Context, email string, passHash []byte) (*models.User, error) {
 	return retry.DoWithData(func() (*models.User, error) {
 		query := "insert into users (email, hashed_password, created_at) values ($1, $2, $3) returning id, email, hashed_password, created_at"
@@ -47,6 +51,7 @@ func (s *Storage) CreateUser(ctx context.Context, email string, passHash []byte)
 	}, retryOpts()...)
 }
 
+// UserByEmail finds a user by provided email
 func (s *Storage) UserByEmail(ctx context.Context, email string) (*models.User, error) {
 	return retry.DoWithData(func() (*models.User, error) {
 		query := "select id, email, hashed_password, created_at from users where email = $1"
