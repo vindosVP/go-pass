@@ -16,10 +16,11 @@ import (
 
 // ServerConfig consists of fields for server configuration
 type ServerConfig struct {
-	Env  string     `yaml:"env" validate:"required"`
-	DB   DBConfig   `yaml:"db"`
-	GRPC GRPCConfig `yaml:"grpc"`
-	Auth AuthConfig `yaml:"auth"`
+	Env          string     `yaml:"env" validate:"required"`
+	DB           DBConfig   `yaml:"db"`
+	GRPC         GRPCConfig `yaml:"grpc"`
+	Auth         AuthConfig `yaml:"auth"`
+	FileLocation string     `yaml:"fileLocation" validate:"required"`
 }
 
 // String turns the ServerConfig to string
@@ -50,8 +51,7 @@ type GRPCConfig struct {
 
 // AuthConfig consists of fields for authentication configuration
 type AuthConfig struct {
-	Secret   string        `yaml:"secret" validate:"required"`
-	TokenTTL time.Duration `yaml:"tokenTTL" validate:"required"`
+	Secret string `yaml:"secret" validate:"required"`
 }
 
 // MustLoad loads the ServerConfig from file
@@ -89,7 +89,7 @@ func configPath() string {
 	flag.Parse()
 
 	if res == "" {
-		res = os.Getenv("CONFIG_PATH")
+		res = os.Getenv("SERVER_CONFIG_PATH")
 	}
 
 	return res

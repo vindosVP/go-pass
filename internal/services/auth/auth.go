@@ -40,8 +40,8 @@ type Auth struct {
 }
 
 // New creates the Auth instance.
-func New(us UserStorage, tokenTTL time.Duration, secret string) *Auth {
-	return &Auth{userStorage: us, tokenTTL: tokenTTL, secret: secret}
+func New(us UserStorage, secret string) *Auth {
+	return &Auth{userStorage: us, secret: secret}
 }
 
 // CreateUser creates a new user with provided email and password.
@@ -89,7 +89,7 @@ func (a *Auth) Login(ctx context.Context, email string, pass string) (string, er
 		lg.Info("invalid credentials")
 		return "", ErrInvalidCredentials
 	}
-	token, err := jwt.NewToken(user, a.tokenTTL, a.secret)
+	token, err := jwt.NewToken(user, a.secret)
 	if err != nil {
 		lg.Error("failed to create token", sl.Err(err))
 		return "", fmt.Errorf("failed to create token: %w", err)

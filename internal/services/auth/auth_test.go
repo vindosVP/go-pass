@@ -19,7 +19,6 @@ import (
 )
 
 const (
-	ttl    = time.Duration(1) * time.Hour
 	secret = "supersecret"
 )
 
@@ -113,12 +112,12 @@ func TestAuth_Login(t *testing.T) {
 			sl.SetupLogger("test")
 			ms := mocks.NewUserStorage(t)
 			ms.On("UserByEmail", mock.Anything, tt.f.email).Return(tt.sm.user, tt.sm.err)
-			a := New(ms, ttl, secret)
+			a := New(ms, secret)
 			token, err := a.Login(context.Background(), tt.f.email, tt.f.password)
 			require.ErrorIs(t, err, tt.w.err)
 			if tt.w.checkToken {
 				require.NotEqual(t, "", token)
-				email, err := jwt.VerifyToken(token, secret)
+				email, _, err := jwt.VerifyToken(token, secret)
 				require.NoError(t, err)
 				assert.Equal(t, tt.f.email, email)
 			}
@@ -199,7 +198,7 @@ func TestAuth_CreateUser(t *testing.T) {
 			sl.SetupLogger("test")
 			ms := mocks.NewUserStorage(t)
 			ms.On("CreateUser", mock.Anything, tt.f.email, mock.Anything).Return(tt.sm.user, tt.sm.err)
-			a := New(ms, ttl, secret)
+			a := New(ms, secret)
 			usr, err := a.CreateUser(context.Background(), tt.f.email, tt.f.pass)
 			if tt.w.user != nil {
 				assert.Equal(t, tt.w.user.Email, usr.Email)

@@ -1,0 +1,36 @@
+services:
+  postgres:
+    image: postgres
+    container_name: postgres
+    networks:
+      - network
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $POSTGRES_DB -U $POSTGRES_USER" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  server:
+    container_name: server
+    networks:
+      - network
+    build: .
+    env_file:
+      - .env
+    ports:
+      - "44044:44044"
+    command: bash -c "./migrator && ./server"
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+
+networks:
+  network:
+    driver: "bridge"
+    external: false
+

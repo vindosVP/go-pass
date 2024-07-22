@@ -3,7 +3,6 @@ package jwt
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 
@@ -11,13 +10,12 @@ import (
 )
 
 // NewToken creates new JWT token for given user.
-func NewToken(user *models.User, duration time.Duration, secret string) (string, error) {
+func NewToken(user *models.User, secret string) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims := token.Claims.(jwt.MapClaims)
 	claims["uid"] = user.ID
 	claims["email"] = user.Email
-	claims["exp"] = time.Now().Add(duration).Unix()
 
 	tokenString, err := token.SignedString([]byte(secret))
 	if err != nil {
@@ -28,7 +26,7 @@ func NewToken(user *models.User, duration time.Duration, secret string) (string,
 }
 
 // VerifyToken verifies users token.
-func VerifyToken(tokenString string, secret string) (string, error) {
+func VerifyToken(tokenString string, secret string) (string, int, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -36,15 +34,19 @@ func VerifyToken(tokenString string, secret string) (string, error) {
 		return []byte(secret), nil
 	})
 	if err != nil {
-		return "", fmt.Errorf("invalid token: %w", err)
+		return "", 0, fmt.Errorf("invalid token: %w", err)
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok || !token.Valid {
-		return "", fmt.Errorf("invalid token: %w", err)
+		return "", 0, fmt.Errorf("invalid token: %w", err)
 	}
 	email, ok := claims["email"].(string)
 	if !ok {
-		return "", fmt.Errorf("failed to extract email from token")
+		return "", 0, fmt.Errorf("failed to extract email from token")
 	}
-	return email, nil
+	uid, ok := claims["uid"].(float64)
+	if !ok {
+		return "", 0, fmt.Errorf("failed to extract uid from token")
+	}
+	return email, int(uid), nil
 }

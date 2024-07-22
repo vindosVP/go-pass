@@ -2,12 +2,11 @@
 package app
 
 import (
-	"time"
-
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	grpcapp "github.com/vindosVP/go-pass/internal/app/grpc"
 	"github.com/vindosVP/go-pass/internal/services/auth"
+	"github.com/vindosVP/go-pass/internal/services/passkeeper"
 	"github.com/vindosVP/go-pass/internal/storage/postgres"
 )
 
@@ -27,10 +26,11 @@ func (a *App) Stop() {
 }
 
 // New creates the App instance
-func New(port int, pool *pgxpool.Pool, tokenTTL time.Duration, secret string) *App {
+func New(port int, pool *pgxpool.Pool, secret string, fl string) *App {
 	s := postgres.New(pool)
-	a := auth.New(s, tokenTTL, secret)
-	grpcApp := grpcapp.New(port, a)
+	a := auth.New(s, secret)
+	k := passkeeper.New(s, s, s, s, fl)
+	grpcApp := grpcapp.New(port, secret, a, k)
 	return &App{
 		grpcServer: grpcApp,
 	}
