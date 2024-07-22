@@ -13,6 +13,8 @@ import (
 	"google.golang.org/grpc/status"
 
 	authgrpc "github.com/vindosVP/go-pass/internal/grpc/auth"
+	passkeepergrpc "github.com/vindosVP/go-pass/internal/grpc/passkeeper"
+	"github.com/vindosVP/go-pass/internal/interceptors"
 	"github.com/vindosVP/go-pass/pkg/logger/sl"
 )
 
@@ -49,7 +51,7 @@ func (a *App) Stop() {
 }
 
 // New creates a grpc app instance.
-func New(port int, auth authgrpc.Auth) *App {
+func New(port int, secret string, auth authgrpc.Auth, keeper passkeepergrpc.Keeper) *App {
 	loggingOpts := []logging.Option{
 		logging.WithLogOnEvents(
 			logging.PayloadReceived, logging.PayloadSent,
@@ -64,9 +66,15 @@ func New(port int, auth authgrpc.Auth) *App {
 	grpcServer := grpc.NewServer(grpc.ChainUnaryInterceptor(
 		recovery.UnaryServerInterceptor(recoveryOpts...),
 		logging.UnaryServerInterceptor(InterceptorLogger(sl.Log), loggingOpts...),
-	))
+		interceptors.NewAuthInterceptor(secret).Unary(),
+	), grpc.ChainStreamInterceptor(
+		recovery.StreamServerInterceptor(recoveryOpts...),
+		logging.StreamServerInterceptor(InterceptorLogger(sl.Log), loggingOpts...),
+		interceptors.NewAuthInterceptor(secret).Stream()),
+	)
 
 	authgrpc.Register(grpcServer, auth)
+	passkeepergrpc.Register(grpcServer, keeper)
 
 	return &App{
 		grpcServer: grpcServer,

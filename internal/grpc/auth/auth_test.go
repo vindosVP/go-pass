@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -21,7 +20,6 @@ import (
 )
 
 const (
-	ttl    = time.Duration(1) * time.Hour
 	secret = "supersecret"
 )
 
@@ -127,7 +125,7 @@ func TestServer_Login(t *testing.T) {
 				if tt.am.err != nil {
 					token = ""
 				} else {
-					tok, err := jwt.NewToken(tt.am.user, ttl, secret)
+					tok, err := jwt.NewToken(tt.am.user, secret)
 					require.NoError(t, err)
 					token = tok
 				}
@@ -140,7 +138,7 @@ func TestServer_Login(t *testing.T) {
 			assert.ErrorIs(t, err, tt.err)
 			if err == nil {
 				require.NotEqual(t, "", out.Token)
-				email, err := jwt.VerifyToken(out.Token, secret)
+				email, _, err := jwt.VerifyToken(out.Token, secret)
 				require.NoError(t, err)
 				assert.Equal(t, tt.in.Email, email)
 			}

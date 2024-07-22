@@ -9,4 +9,7 @@ var (
 
 	// ErrUserNotExist - error if user with provided email does not exist
 	ErrUserNotExist = errors.New("user does not exist")
+
+	// ErrFileNotExist - error if file does not exist
+	ErrFileNotExist = errors.New("file does not exist")
 )

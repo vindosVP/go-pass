@@ -62,7 +62,7 @@ func configPath() string {
 	flag.Parse()
 
 	if res == "" {
-		res = os.Getenv("CONFIG_PATH")
+		res = os.Getenv("MIGRATOR_CONFIG_PATH")
 	}
 
 	return res

@@ -36,7 +36,7 @@ func main() {
 	if err != nil {
 		log.Fatal(fmt.Errorf("error connecting to database: %w", err))
 	}
-	a := app.New(conf.GRPC.Port, pool, conf.Auth.TokenTTL, conf.Auth.Secret)
+	a := app.New(conf.GRPC.Port, pool, conf.Auth.Secret, conf.FileLocation)
 
 	go func() {
 		a.MustRun()
