@@ -1,0 +1,13 @@
+env: "local"
+fileLocation: ./files
+db:
+  host: postgres
+  port: 5432
+  user: postgres
+  password: postgres
+  database: go-pass
+grpc:
+  port: 44044
+  timeout: 5s
+auth:
+  secret: superSecret

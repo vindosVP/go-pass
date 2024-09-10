@@ -2,4 +2,6 @@
 
 Менеджер паролей
 
-> Work in progress
+> Server part READY
+
+> Client part in progress 

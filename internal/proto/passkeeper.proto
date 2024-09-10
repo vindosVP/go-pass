@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+package auth;
+
+option go_package = "github.com/vindosVP/go-pass/v1;passkeeperv1";
+
+enum Type {
+  PASSWORD = 0;
+  CARD = 1;
+  TEXT = 2;
+  FILE = 3;
+}
+
+message Entity {
+  int64 id = 1;
+  Type type = 3;
+  string login = 4;
+  string password = 5;
+  string cardNumber = 6;
+  string cardOwner = 7;
+  string cardCVC = 8;
+  string cardExp = 9;
+  string text = 10;
+  string filename = 11;
+  string metadata = 12;
+}
+
+message AddEntityRequest {
+  Entity entity = 1;
+}
+
+message AddEntityResponse {
+  int64 id = 1;
+}
+
+message UpdateEntityRequest {
+  int64 id = 1;
+  Entity entity = 2;
+}
+
+message UpdateEntityResponse {
+}
+
+message DeleteEntityRequest {
+  int64 id = 1;
+  Type type = 2;
+}
+
+message DeleteEntityResponse {
+}
+
+message ListEntitiesRequest {
+}
+
+message ListEntitiesResponse {
+  repeated Entity entity = 1;
+}
+
+message UploadFileRequest {
+  bytes chunk = 1;
+  string filename = 2;
+  string metadata = 3;
+}
+
+message UploadFileResponse {
+  int64 id = 1;
+}
+
+message DownloadFileRequest {
+  int64 id = 1;
+}
+
+message DownloadFileResponse {
+  string filename = 1;
+  bytes chunk = 2;
+}
+
+service PassKeeper {
+  // AddEntity adds a new entity.
+  rpc AddEntity (AddEntityRequest) returns (AddEntityResponse);
+  // UpdateEntity updates the entity.
+  rpc UpdateEntity (UpdateEntityRequest) returns (UpdateEntityResponse);
+  // DeleteEntity deletes the entity.
+  rpc DeleteEntity (DeleteEntityRequest) returns (DeleteEntityResponse);
+  // ListEntities return all entities list.
+  rpc ListEntities (ListEntitiesRequest) returns (ListEntitiesResponse);
+
+  // UploadFile uploads file to the server.
+  rpc UploadFile (stream UploadFileRequest) returns (UploadFileResponse);
+  // DownloadFile downloads file from the server.
+  rpc DownloadFile (DownloadFileRequest) returns (stream DownloadFileResponse);
+}
+
